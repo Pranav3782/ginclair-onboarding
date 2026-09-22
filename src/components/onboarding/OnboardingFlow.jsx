@@ -9,6 +9,7 @@ import StepCommunity from './StepCommunity'
 import XPClaimAnimation from './XPClaimAnimation'
 import ConfettiCanvas from './ConfettiCanvas'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
+import { sound } from '../../utils/audio'
 
 const TOTAL_STEPS = 4
 
@@ -25,17 +26,21 @@ export default function OnboardingFlow({ onComplete }) {
   const [isClaimed, setIsClaimed] = useState(false)
 
   function goNext() {
+    sound.playPop()
     setStep((s) => Math.min(s + 1, TOTAL_STEPS))
   }
 
   function goPrevious() {
+    sound.playPop()
     setStep((s) => Math.max(s - 1, 1))
   }
 
   function handleClaim() {
     if (isClaiming || isClaimed) return
+    sound.playCoin()
     setIsClaiming(true)
     window.setTimeout(() => {
+      sound.playSuccess()
       setIsClaimed(true)
     }, 150)
     window.setTimeout(() => {

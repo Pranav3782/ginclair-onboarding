@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { sound } from '../../utils/audio'
 
 const PACES = [
   { id: 'casual', label: '15 mins / day', desc: 'Light & steady', xpBonus: '+10 XP daily' },
@@ -17,11 +18,13 @@ export default function StepGoalSelector({ onGoalSelected }) {
   const [selectedFocus, setSelectedFocus] = useState('Systems Architecture')
 
   function handlePaceSelect(id) {
+    sound.playPop()
     setSelectedPace(id)
     onGoalSelected?.({ pace: id, focus: selectedFocus })
   }
 
   function handleFocusSelect(focus) {
+    sound.playPop()
     setSelectedFocus(focus)
     onGoalSelected?.({ pace: selectedPace, focus })
   }

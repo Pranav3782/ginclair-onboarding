@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { swipeQuestion } from '../../data/swipeQuestions'
+import { sound } from '../../utils/audio'
 
 export default function StepSwipeTest({ onAnswered }) {
   const [selectedId, setSelectedId] = useState(null)
@@ -8,6 +9,11 @@ export default function StepSwipeTest({ onAnswered }) {
   function handleChoice(id) {
     if (selectedId) return
     setSelectedId(id)
+    if (id === swipeQuestion.correct) {
+      sound.playSuccess()
+    } else {
+      sound.playWrong()
+    }
     onAnswered?.()
   }
 
