@@ -4,13 +4,15 @@ import Button from '../common/Button'
 import ProgressBar from '../common/ProgressBar'
 import StepWelcome from './StepWelcome'
 import StepSwipeTest from './StepSwipeTest'
+import StepGoalSelector from './StepGoalSelector'
 import StepCommunity from './StepCommunity'
 import XPClaimAnimation from './XPClaimAnimation'
+import ConfettiCanvas from './ConfettiCanvas'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 
-const TOTAL_STEPS = 3
+const TOTAL_STEPS = 4
 
-export default function OnboardingFlow() {
+export default function OnboardingFlow({ onComplete }) {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useLocalStorage(
     'ginclair.onboardingComplete',
     false
@@ -18,6 +20,7 @@ export default function OnboardingFlow() {
   const [isOpen, setIsOpen] = useState(!hasCompletedOnboarding)
   const [step, setStep] = useState(1)
   const [hasAnsweredPreview, setHasAnsweredPreview] = useState(false)
+  const [userGoal, setUserGoal] = useState({ pace: 'standard', focus: 'Systems Architecture' })
   const [isClaiming, setIsClaiming] = useState(false)
   const [isClaimed, setIsClaimed] = useState(false)
 
@@ -38,7 +41,8 @@ export default function OnboardingFlow() {
     window.setTimeout(() => {
       setHasCompletedOnboarding(true)
       setIsOpen(false)
-    }, 1500)
+      onComplete?.(userGoal)
+    }, 1800)
   }
 
   const canGoNext = step !== 2 || hasAnsweredPreview
@@ -48,6 +52,7 @@ export default function OnboardingFlow() {
   return (
     <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} labelledBy="onboarding-heading">
       <div className="relative bg-surface-white text-charcoal-text">
+        {isClaimed && <ConfettiCanvas />}
         {isClaiming && <XPClaimAnimation amount={50} />}
 
         <div className="flex items-center justify-between border-b border-border-cream/80 px-4 py-3 sm:px-6 sm:py-4">
@@ -95,10 +100,10 @@ export default function OnboardingFlow() {
                 </svg>
               </div>
               <h2 className="mt-4 font-serif text-xl sm:text-2xl font-medium text-charcoal-text">
-                50 XP claimed. You're in!
+                50 XP Claimed! Welcome Aboard 🎉
               </h2>
               <p className="mt-1.5 text-xs sm:text-sm text-muted-text">
-                Taking you to the course player…
+                Unlocking your customized course dashboard…
               </p>
             </div>
           ) : (
@@ -107,7 +112,10 @@ export default function OnboardingFlow() {
               {step === 2 && (
                 <StepSwipeTest onAnswered={() => setHasAnsweredPreview(true)} />
               )}
-              {step === 3 && <StepCommunity />}
+              {step === 3 && (
+                <StepGoalSelector onGoalSelected={(goal) => setUserGoal(goal)} />
+              )}
+              {step === 4 && <StepCommunity />}
             </>
           )}
         </div>
