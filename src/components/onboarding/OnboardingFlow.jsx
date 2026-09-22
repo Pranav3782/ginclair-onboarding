@@ -1,0 +1,141 @@
+import { useState } from 'react'
+import Modal from '../common/Modal'
+import Button from '../common/Button'
+import ProgressBar from '../common/ProgressBar'
+import StepWelcome from './StepWelcome'
+import StepSwipeTest from './StepSwipeTest'
+import StepCommunity from './StepCommunity'
+import XPClaimAnimation from './XPClaimAnimation'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
+
+const TOTAL_STEPS = 3
+
+export default function OnboardingFlow() {
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useLocalStorage(
+    'ginclair.onboardingComplete',
+    false
+  )
+  const [isOpen, setIsOpen] = useState(!hasCompletedOnboarding)
+  const [step, setStep] = useState(1)
+  const [hasAnsweredPreview, setHasAnsweredPreview] = useState(false)
+  const [isClaiming, setIsClaiming] = useState(false)
+  const [isClaimed, setIsClaimed] = useState(false)
+
+  function goNext() {
+    setStep((s) => Math.min(s + 1, TOTAL_STEPS))
+  }
+
+  function goPrevious() {
+    setStep((s) => Math.max(s - 1, 1))
+  }
+
+  function handleClaim() {
+    if (isClaiming || isClaimed) return
+    setIsClaiming(true)
+    window.setTimeout(() => {
+      setIsClaimed(true)
+    }, 150)
+    window.setTimeout(() => {
+      setHasCompletedOnboarding(true)
+      setIsOpen(false)
+    }, 1500)
+  }
+
+  const canGoNext = step !== 2 || hasAnsweredPreview
+
+  if (!isOpen) return null
+
+  return (
+    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} labelledBy="onboarding-heading">
+      <div className="relative bg-surface-white text-charcoal-text">
+        {isClaiming && <XPClaimAnimation amount={50} />}
+
+        <div className="flex items-center justify-between border-b border-border-cream/80 px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-charcoal text-cream font-serif font-bold text-sm">
+              G
+            </div>
+            <span className="font-serif text-base sm:text-lg font-semibold tracking-tight text-charcoal-text">
+              Ginclair
+            </span>
+          </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            aria-label="Close onboarding"
+            className="transition-smooth rounded-full p-1.5 sm:p-2 text-muted-text hover:bg-surface-beige/50 hover:text-charcoal-text"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path
+                d="M4 4l10 10M14 4L4 14"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-4 pt-3.5 sm:px-6 sm:pt-5">
+          <ProgressBar step={step} totalSteps={TOTAL_STEPS} />
+        </div>
+
+        <div className="px-4 py-3.5 sm:px-6 sm:py-5 min-h-0 sm:min-h-[300px]">
+          {isClaimed ? (
+            <div className="flex flex-col items-center justify-center py-6 text-center animate-popIn">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-accent text-white shadow-subtle">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                  <path
+                    d="M6 13l5 5 9-11"
+                    stroke="currentColor"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-check"
+                  />
+                </svg>
+              </div>
+              <h2 className="mt-4 font-serif text-xl sm:text-2xl font-medium text-charcoal-text">
+                50 XP claimed. You're in!
+              </h2>
+              <p className="mt-1.5 text-xs sm:text-sm text-muted-text">
+                Taking you to the course player…
+              </p>
+            </div>
+          ) : (
+            <>
+              {step === 1 && <StepWelcome />}
+              {step === 2 && (
+                <StepSwipeTest onAnswered={() => setHasAnsweredPreview(true)} />
+              )}
+              {step === 3 && <StepCommunity />}
+            </>
+          )}
+        </div>
+
+        {!isClaimed && (
+          <div className="flex items-center justify-between border-t border-border-cream/80 px-4 py-3 sm:px-6 sm:py-4 bg-cream/30">
+            <Button
+              variant="ghost"
+              onClick={goPrevious}
+              disabled={step === 1}
+              ariaLabel="Go back to previous step"
+              className="text-xs sm:text-sm py-2 px-3.5 sm:px-5"
+            >
+              Back
+            </Button>
+
+            {step < TOTAL_STEPS ? (
+              <Button onClick={goNext} disabled={!canGoNext} ariaLabel="Continue to next step" className="text-xs sm:text-sm py-2 px-4 sm:px-5">
+                Continue
+              </Button>
+            ) : (
+              <Button onClick={handleClaim} variant="accent" disabled={isClaiming} ariaLabel="Enter course player and claim 50 XP" className="text-xs sm:text-sm py-2 px-4 sm:px-5">
+                {isClaiming ? 'Claiming…' : 'Enter Course Player & Claim 50 XP'}
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+    </Modal>
+  )
+}
