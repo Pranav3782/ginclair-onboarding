@@ -3,9 +3,9 @@ import Modal from '../common/Modal'
 import Button from '../common/Button'
 import ProgressBar from '../common/ProgressBar'
 import StepWelcome from './StepWelcome'
+import StepAvatarSelector from './StepAvatarSelector'
 import StepSwipeTest from './StepSwipeTest'
 import StepGoalSelector from './StepGoalSelector'
-import StepCommunity from './StepCommunity'
 import XPClaimAnimation from './XPClaimAnimation'
 import ConfettiCanvas from './ConfettiCanvas'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
@@ -21,6 +21,7 @@ export default function OnboardingFlow({ onComplete }) {
   const [isOpen, setIsOpen] = useState(!hasCompletedOnboarding)
   const [step, setStep] = useState(1)
   const [hasAnsweredPreview, setHasAnsweredPreview] = useState(false)
+  const [persona, setPersona] = useState({ id: 'architect', title: 'System Architect' })
   const [userGoal, setUserGoal] = useState({ pace: 'standard', focus: 'Systems Architecture' })
   const [isClaiming, setIsClaiming] = useState(false)
   const [isClaimed, setIsClaimed] = useState(false)
@@ -46,11 +47,11 @@ export default function OnboardingFlow({ onComplete }) {
     window.setTimeout(() => {
       setHasCompletedOnboarding(true)
       setIsOpen(false)
-      onComplete?.(userGoal)
+      onComplete?.({ ...userGoal, persona })
     }, 1800)
   }
 
-  const canGoNext = step !== 2 || hasAnsweredPreview
+  const canGoNext = step !== 3 || hasAnsweredPreview
 
   if (!isOpen) return null
 
@@ -105,22 +106,24 @@ export default function OnboardingFlow({ onComplete }) {
                 </svg>
               </div>
               <h2 className="mt-4 font-serif text-xl sm:text-2xl font-medium text-charcoal-text">
-                50 XP Claimed! Welcome Aboard 🎉
+                Level 1 Unlocked! Welcome Aboard 🎉
               </h2>
               <p className="mt-1.5 text-xs sm:text-sm text-muted-text">
-                Unlocking your customized course dashboard…
+                Unlocking your custom course dashboard for <strong className="text-orange-accent">{persona.title}</strong>…
               </p>
             </div>
           ) : (
             <>
               {step === 1 && <StepWelcome />}
               {step === 2 && (
-                <StepSwipeTest onAnswered={() => setHasAnsweredPreview(true)} />
+                <StepAvatarSelector onSelectPersona={(p) => setPersona(p)} />
               )}
               {step === 3 && (
+                <StepSwipeTest onAnswered={() => setHasAnsweredPreview(true)} />
+              )}
+              {step === 4 && (
                 <StepGoalSelector onGoalSelected={(goal) => setUserGoal(goal)} />
               )}
-              {step === 4 && <StepCommunity />}
             </>
           )}
         </div>

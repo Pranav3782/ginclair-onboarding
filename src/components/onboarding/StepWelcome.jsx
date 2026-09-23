@@ -1,54 +1,50 @@
-const STATS = [
-  { label: 'XP Points', value: '0' },
-  { label: 'Daily Streak', value: '0' },
-  { label: 'Bonus Coins', value: '25', highlight: true },
+import { sound } from '../../utils/audio'
+
+const LOOT_ITEMS = [
+  { label: 'Starter XP', value: '+50 XP', icon: '⚡', color: 'bg-orange-accent/15 border-orange-accent/30 text-orange-accent' },
+  { label: 'Bonus Coins', value: '25 Coins', icon: '🪙', color: 'bg-amber-500/15 border-amber-500/30 text-amber-700' },
+  { label: 'Daily Streak', value: 'Day 1 Started', icon: '🔥', color: 'bg-rose-500/15 border-rose-500/30 text-rose-700' },
 ]
 
 export default function StepWelcome() {
   return (
-    <div className="animate-slideInRight">
-      <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-orange-accent">
-        Welcome to Ginclair
-      </p>
+    <div className="animate-slideInRight text-center sm:text-left">
+      <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-accent/10 border border-orange-accent/30 px-2.5 py-0.5 text-[10px] font-bold text-orange-accent uppercase tracking-wider mb-1">
+        🎉 Course Unlocked!
+      </div>
       <h2
         id="onboarding-heading"
-        className="mt-1 font-serif text-lg sm:text-2xl font-medium leading-snug text-charcoal-text"
+        className="font-serif text-xl sm:text-2xl font-bold leading-snug text-charcoal-text"
       >
-        Your course is unlocked! Here's your starting balance:
+        Welcome to Systems Design Foundations!
       </h2>
-      <p className="mt-1 sm:mt-2 text-xs sm:text-sm leading-relaxed text-muted-text">
-        Every video lesson you finish gives you XP. Practicing every day builds your daily streak.
+      <p className="mt-1 sm:mt-1.5 text-xs sm:text-sm leading-relaxed text-muted-text">
+        Your course is ready. We've unlocked your starter loot pack to kickstart your journey:
       </p>
 
-      <div className="mt-3.5 sm:mt-5 grid grid-cols-3 gap-2 sm:gap-3">
-        {STATS.map((stat) => (
+      {/* Gamified Loot Box Grid */}
+      <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+        {LOOT_ITEMS.map((item) => (
           <div
-            key={stat.label}
-            className={`rounded-[14px] sm:rounded-[18px] border p-2 sm:p-4 text-center transition-all duration-200 ${
-              stat.highlight
-                ? 'border-orange-accent/40 bg-surface-beige/80 shadow-subtle'
-                : 'border-border-cream bg-cream/50'
-            }`}
+            key={item.label}
+            onClick={() => sound.playPop()}
+            className={`cursor-pointer rounded-xl sm:rounded-2xl border p-2.5 sm:p-3.5 text-center transition-all duration-200 hover:scale-105 ${item.color}`}
           >
-            <div
-              className={`font-serif text-xl sm:text-2xl font-semibold ${
-                stat.highlight ? 'text-orange-accent' : 'text-charcoal-text'
-              }`}
-            >
-              {stat.value}
+            <div className="text-xl sm:text-2xl">{item.icon}</div>
+            <div className="mt-1 font-serif text-xs sm:text-base font-bold">
+              {item.value}
             </div>
-            <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs font-medium text-muted-text">{stat.label}</div>
+            <div className="mt-0.5 text-[9px] sm:text-[11px] font-medium text-muted-text">{item.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="mt-3 sm:mt-5 flex items-center gap-2.5 sm:gap-3.5 rounded-[14px] sm:rounded-[18px] border border-border-cream bg-surface-beige/40 p-2.5 sm:p-4">
-        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-orange-accent/15 text-sm sm:text-lg">
-          🪙
+      <div className="mt-4 flex items-center gap-3 rounded-xl border border-border-cream bg-surface-beige/50 p-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-accent text-white text-base">
+          🎯
         </div>
-        <p className="text-[11px] sm:text-sm text-charcoal-text leading-snug sm:leading-relaxed">
-          <span className="font-semibold text-charcoal-text">How coins work:</span>{' '}
-          Earn 1,000 XP to get 100 Gincoins. Trade coins for streak freezes and course discounts!
+        <p className="text-[11px] sm:text-xs text-charcoal-text leading-tight text-left">
+          <span className="font-bold text-charcoal-text">Bite-sized learning:</span> Complete 1 short video daily to keep your streak burning and level up your engineering rank!
         </p>
       </div>
     </div>
